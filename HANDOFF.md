@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M4.1 theme is done. M5 is next: commit the sample evidence and push to GitHub. Do not run git until that milestone.
+M5 done — published. https://github.com/driaialchemy/capex on 2026-11-18.
 
 ## Done
 
@@ -25,9 +25,9 @@ M4.1 theme is done. M5 is next: commit the sample evidence and push to GitHub. D
 - Sample evidence: `docs/sample_run/CPX-003/` from smoke run `runs/CPX-003-20261119T000937Z`. `runs/` stays gitignored.
 - Dark theme in `.streamlit/config.toml` and `src/capex/ui_theme.py`. Page background `assets/bg_page.webp`, sidebar `assets/bg_sidebar.webp`, hero `assets/hero_pipeline.webp`. Tables stay on a solid panel. Originals live in `assets/source/` and stay gitignored.
 
-## Next (M5)
+## Next
 
-Commit `docs/sample_run/` and push the repository to GitHub. No new product behavior.
+The public repo is live. No further product work is queued.
 
 ## Manual check
 
