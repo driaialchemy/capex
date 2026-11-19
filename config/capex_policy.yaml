@@ -1,0 +1,11 @@
+hurdle_rate: 0.10
+max_payback_years: 5
+approval_tiers:
+  department_head_if_under: 250000
+  cfo_if_up_to: 1000000
+  above_that: cfo_and_ceo
+allowed_recommendations:
+  - APPROVE
+  - APPROVE_WITH_CONDITIONS
+  - DEFER
+  - REJECT

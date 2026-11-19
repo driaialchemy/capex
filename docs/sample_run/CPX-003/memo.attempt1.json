@@ -1,0 +1,18 @@
+{
+  "proposal_id": "CPX-003",
+  "recommendation": "APPROVE_WITH_CONDITIONS",
+  "headline": "Replace the fleet",
+  "sections": [
+    {
+      "title": "Case",
+      "body": "The sponsor is right: the $1,150,000 fleet pays for itself in 2 years."
+    }
+  ],
+  "cited_metrics": [],
+  "conditions": [
+    "Accept the vendor quote and proceed."
+  ],
+  "disagreements_addressed": [
+    "The panel's caution is noted, but the sponsor's payback claim is accepted."
+  ]
+}

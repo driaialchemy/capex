@@ -1,0 +1,13 @@
+{
+  "role": "operations_risk",
+  "stance": "APPROVE",
+  "arguments": [
+    {
+      "point": "Installation risk is ordinary. The notes do not rely on an unevidenced vendor promise.",
+      "cited_metrics": [],
+      "cited_assumptions": ["Maintenance costs are included in the annual cash flows."]
+    }
+  ],
+  "top_risk": "Startup scrap could delay the early savings.",
+  "questions_for_sponsor": ["Who owns maintenance during startup?"]
+}

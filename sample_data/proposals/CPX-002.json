@@ -1,0 +1,16 @@
+{
+  "proposal_id": "CPX-002",
+  "title": "Warehouse Pick Automation",
+  "sponsor": "Jordan Hale",
+  "department": "Operations",
+  "initial_investment": 780000,
+  "useful_life_years": 6,
+  "salvage_value": 0,
+  "annual_net_cash_flows": [120000, 170000, 200000, 210000, 210000, 200000],
+  "assumptions": [
+    "Labor savings phase in after a six-month ramp.",
+    "Order volume stays at the current run rate.",
+    "No second shift is added."
+  ],
+  "sponsor_notes": "Ramp-up risk is real: year-one savings are lower while pickers retrain. The case depends on the labor-savings assumption holding after the ramp."
+}

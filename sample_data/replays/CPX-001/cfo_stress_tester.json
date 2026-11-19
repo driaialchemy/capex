@@ -1,0 +1,13 @@
+{
+  "role": "cfo_stress_tester",
+  "stance": "APPROVE",
+  "arguments": [
+    {
+      "point": "Even the lighter case stays positive: {{npv_flows_minus_10}} and {{npv_flows_minus_20}} remain above zero, and {{payback_years}} is within {{max_payback_years}}.",
+      "cited_metrics": ["npv_flows_minus_10", "npv_flows_minus_20", "payback_years", "max_payback_years"],
+      "cited_assumptions": ["Maintenance costs are included in the annual cash flows."]
+    }
+  ],
+  "top_risk": "A deeper volume drop than the stress cases is not in the model.",
+  "questions_for_sponsor": ["Which measured overtime study supports the savings?"]
+}

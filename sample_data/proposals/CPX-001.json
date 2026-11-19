@@ -1,0 +1,16 @@
+{
+  "proposal_id": "CPX-001",
+  "title": "CNC Machining Center",
+  "sponsor": "Alex Nguyen",
+  "department": "Manufacturing",
+  "initial_investment": 420000,
+  "useful_life_years": 7,
+  "salvage_value": 40000,
+  "annual_net_cash_flows": [95000, 105000, 110000, 110000, 110000, 105000, 100000],
+  "assumptions": [
+    "Utilization stays near current overtime levels.",
+    "Maintenance costs are included in the annual cash flows.",
+    "Savings claims are modest and based on in-house time studies."
+  ],
+  "sponsor_notes": "Replaces an aging manual cell. Cash-flow claims are modest and tied to measured overtime, not a vendor brochure."
+}

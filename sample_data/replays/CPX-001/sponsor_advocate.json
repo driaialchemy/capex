@@ -1,0 +1,18 @@
+{
+  "role": "sponsor_advocate",
+  "stance": "APPROVE",
+  "arguments": [
+    {
+      "point": "The base case clears the hurdle: {{npv}} is positive and {{payback_years}} is inside the policy limit.",
+      "cited_metrics": ["npv", "payback_years"],
+      "cited_assumptions": ["Utilization stays near current overtime levels."]
+    },
+    {
+      "point": "The savings claims are modest and tied to measured overtime, not a vendor brochure.",
+      "cited_metrics": ["npv"],
+      "cited_assumptions": ["Savings claims are modest and based on in-house time studies."]
+    }
+  ],
+  "top_risk": "Utilization could fall after the cell is installed.",
+  "questions_for_sponsor": []
+}

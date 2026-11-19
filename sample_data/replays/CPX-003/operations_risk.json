@@ -1,0 +1,15 @@
+{
+  "role": "operations_risk",
+  "stance": "REJECT",
+  "arguments": [
+    {
+      "point": "The notes rely on an unverified vendor fuel-savings claim. Nothing in the assumptions evidences that claim.",
+      "cited_metrics": [],
+      "cited_assumptions": ["Routes and mileage stay at this year's level."]
+    }
+  ],
+  "top_risk": "A vendor promise with no evidence becomes the reason the case looks acceptable.",
+  "questions_for_sponsor": [
+    "What evidence, other than the vendor statement, supports the fuel-savings claim?"
+  ]
+}

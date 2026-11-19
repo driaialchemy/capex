@@ -1,0 +1,35 @@
+{
+  "passed": false,
+  "checks": [
+    {
+      "name": "recommendation_allowed",
+      "passed": false,
+      "blocking": true,
+      "detail": "APPROVE_WITH_CONDITIONS is not allowed. Allowed: DEFER, REJECT."
+    },
+    {
+      "name": "no_raw_figures",
+      "passed": false,
+      "blocking": true,
+      "detail": "section 1 contains a raw figure: $1,150,000"
+    },
+    {
+      "name": "tokens_valid",
+      "passed": true,
+      "blocking": true,
+      "detail": "Every token is a cited metric."
+    },
+    {
+      "name": "sponsor_payback_claim",
+      "passed": false,
+      "blocking": false,
+      "detail": "Notes claim payback of 2 years, but the investment is not recovered."
+    },
+    {
+      "name": "sponsor_percent_claims",
+      "passed": true,
+      "blocking": false,
+      "detail": "UNVERIFIED: 40%"
+    }
+  ]
+}

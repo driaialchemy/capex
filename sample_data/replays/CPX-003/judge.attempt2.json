@@ -1,0 +1,16 @@
+{
+  "proposal_id": "CPX-003",
+  "recommendation": "REJECT",
+  "headline": "Reject the fleet replacement",
+  "sections": [
+    {
+      "title": "Case",
+      "body": "The investment is not recovered ({{payback_years}}) and {{npv}} is below zero. The vendor fuel-savings claim is unverified."
+    }
+  ],
+  "cited_metrics": ["payback_years", "npv"],
+  "conditions": [],
+  "disagreements_addressed": [
+    "The sponsor would defer, but the missing payback and the negative value settle the case as a rejection."
+  ]
+}

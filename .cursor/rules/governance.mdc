@@ -1,0 +1,7 @@
+---
+description: Verifier module stays pure deterministic Python.
+globs: src/capex/verifier.py
+alwaysApply: false
+---
+
+No AI or network imports; pure deterministic Python.

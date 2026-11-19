@@ -1,0 +1,11 @@
+{
+  "status": "PENDING_APPROVAL",
+  "recommendation": "REJECT",
+  "attempts": 2,
+  "proposal_findings": [
+    {
+      "name": "sponsor_payback_claim",
+      "detail": "Notes claim payback of 2 years, but the investment is not recovered."
+    }
+  ]
+}

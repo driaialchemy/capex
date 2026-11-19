@@ -1,0 +1,58 @@
+Metadata-Version: 2.4
+Name: capex
+Version: 0.1.0
+Summary: Teaching demo: the AI argues, code calculates, a human decides.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+
+# CapEx Decision Engine
+
+A teaching demo for business owners. The AI argues, code calculates, code verifies, and a human decides.
+
+You give the engine a capital-spending proposal. Code checks the shape of the proposal and, in later milestones, computes NPV, IRR, and payback. Three roles (sponsor, CFO, operations) may debate those figures. A draft memo is written, then checked by code that does not call a model. Nothing is approved until a person says so.
+
+Milestone 1 is the scaffold: schemas, a policy file, three synthetic proposals, and a kill switch. It does no finance math and does not call a model.
+
+## Setup and tests
+
+Requires Python 3.11. From this folder, in PowerShell:
+
+```powershell
+python -m venv .venv; .\.venv\Scripts\Activate.ps1; pip install -r requirements.txt; pytest -q; python -m capex.validate_samples
+```
+
+Check the sample proposals on their own:
+
+```powershell
+python -m capex.validate_samples
+```
+
+## Architecture
+
+```
+proposal.json ──► [1 Intake: Pydantic schema]            deterministic
+                ──► [2 Finance engine: NPV/IRR/payback]   deterministic  (model never does math)
+                ──► [3 Debate: Sponsor · CFO · Ops]       probabilistic  (G9, read-only, cites metric keys only)
+                ──► [4 Synthesizer → draft memo]          probabilistic
+                ──► [5 Independent verifier]              deterministic  (A7, code-only, no AI imports)
+                ──► [6 Stage gates: re-read files on disk] deterministic
+                ──► [7 Human approval gate]               human          (A5, enforced in code)
+every step ──► runs/flight_recorder.jsonl (append-only, A8)
+```
+
+Steps 2 through 7 are later milestones. The recorder file is not written yet.
+
+## Governance
+
+**Owner:** Dr. Michael Seller (AI Alchemy)
+
+**What can it do?**
+It reads a proposal, checks it against a published schema, and names which approval tier the amount falls into. Later milestones add finance math, a three-role debate, a draft memo, and a code check of that memo. It cannot move money, send messages, or approve spending. A human decides.
+
+**What can it reach?**
+Local files in this project: the policy, the sample proposals, `.env`, and the `runs/` folder. Milestone 1 opens no network connection. A later milestone can call the Anthropic API when `CAPEX_LLM_MODE` is not `offline`. The API key stays in `.env`, which is not committed.
+
+**What evidence remains?**
+The policy, the synthetic proposals, and the source stay in the repository. Milestone 3 adds an append-only `runs/flight_recorder.jsonl`. Milestone 1 does not write run records. `.env` is gitignored.
+
+**Kill switch:** set `CAPEX_KILL_SWITCH=1` in `.env`, or create a file named `KILL_SWITCH` in the repo root. The pipeline refuses to run. If `CAPEX_KILL_SWITCH` is already set in the process environment, the value in `.env` does not replace it.

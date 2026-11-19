@@ -1,0 +1,19 @@
+{
+  "proposal_id": "CPX-002",
+  "recommendation": "APPROVE_WITH_CONDITIONS",
+  "headline": "Approve only with a staged rollout",
+  "sections": [
+    {
+      "title": "Recommendation",
+      "body": "The plan {{npv}} is positive, but {{npv_flows_minus_10}} turns negative if the savings come in light. Approve with conditions rather than defer: stage the rollout, and hold a labor-savings checkpoint before expanding."
+    }
+  ],
+  "cited_metrics": ["npv", "npv_flows_minus_10"],
+  "conditions": [
+    "Stage the rollout and do not expand until the early cell is stable.",
+    "Hold a labor-savings checkpoint before the second phase, using {{npv_flows_minus_10}} as the stress test."
+  ],
+  "disagreements_addressed": [
+    "The CFO would defer because the lighter cash-flow case is negative. Operations asked for a checkpoint. The base case still supports going ahead if those conditions are met."
+  ]
+}

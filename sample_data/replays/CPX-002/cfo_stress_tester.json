@@ -1,0 +1,13 @@
+{
+  "role": "cfo_stress_tester",
+  "stance": "DEFER",
+  "arguments": [
+    {
+      "point": "The plan {{npv}} is only barely positive. {{npv_flows_minus_10}} turns the case negative, and {{npv_flows_minus_20}} is worse. That is too much assumption risk for an outright approval.",
+      "cited_metrics": ["npv", "npv_flows_minus_10", "npv_flows_minus_20"],
+      "cited_assumptions": ["Order volume stays at the current run rate."]
+    }
+  ],
+  "top_risk": "Labor savings may not arrive, and the stress case does not clear the hurdle.",
+  "questions_for_sponsor": ["What happens to the case if the labor-savings assumption slips?"]
+}

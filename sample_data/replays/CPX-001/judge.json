@@ -1,0 +1,16 @@
+{
+  "proposal_id": "CPX-001",
+  "recommendation": "APPROVE",
+  "headline": "Approve the machining center",
+  "sections": [
+    {
+      "title": "Recommendation",
+      "body": "The panel agrees the case clears the hurdle. {{npv}} is positive and {{payback_years}} sits inside {{max_payback_years}}. The stress values {{npv_flows_minus_10}} and {{npv_flows_minus_20}} stay positive, so a condition is not required."
+    }
+  ],
+  "cited_metrics": ["npv", "payback_years", "max_payback_years", "npv_flows_minus_10", "npv_flows_minus_20"],
+  "conditions": [],
+  "disagreements_addressed": [
+    "No material disagreement. The sponsor, the stress test, and operations all support approval."
+  ]
+}

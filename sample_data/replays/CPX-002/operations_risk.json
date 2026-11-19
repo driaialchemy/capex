@@ -1,0 +1,15 @@
+{
+  "role": "operations_risk",
+  "stance": "APPROVE_WITH_CONDITIONS",
+  "arguments": [
+    {
+      "point": "Delivery depends on the ramp. The labor-savings assumption is stated, but the notes admit early savings are lower while pickers retrain.",
+      "cited_metrics": [],
+      "cited_assumptions": ["Labor savings phase in after a six-month ramp."]
+    }
+  ],
+  "top_risk": "Retraining could erase the early savings the case needs.",
+  "questions_for_sponsor": [
+    "What checkpoint will show that the labor-savings assumption is real before the project is fully rolled out?"
+  ]
+}

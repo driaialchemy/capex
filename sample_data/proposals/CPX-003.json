@@ -1,0 +1,14 @@
+{
+  "proposal_id": "CPX-003",
+  "title": "Delivery Fleet Replacement",
+  "sponsor": "Riley Cho",
+  "department": "Logistics",
+  "initial_investment": 1150000,
+  "useful_life_years": 5,
+  "salvage_value": 150000,
+  "annual_net_cash_flows": [180000, 210000, 230000, 240000, 240000],
+  "assumptions": [
+    "Routes and mileage stay at this year's level."
+  ],
+  "sponsor_notes": "Includes an unverified vendor claim of \"40% fuel savings\". The sponsor says it pays for itself in 2 years."
+}

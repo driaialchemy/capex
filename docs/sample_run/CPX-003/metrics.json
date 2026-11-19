@@ -1,0 +1,19 @@
+{
+  "proposal_id": "CPX-003",
+  "npv": -233924.97,
+  "irr": 0.0253,
+  "payback_years": null,
+  "discounted_payback_years": null,
+  "npv_flows_minus_20": -398512.33,
+  "npv_flows_minus_10": -316218.65,
+  "npv_flows_plus_10": -151631.28,
+  "npv_rate_plus_2pp": -284344.73,
+  "hurdle_rate": 0.1,
+  "max_payback_years": 5,
+  "initial_investment": 1150000.0,
+  "approval_tier": "cfo_and_ceo",
+  "allowed_recommendations": [
+    "DEFER",
+    "REJECT"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "role": "sponsor_advocate",
+  "stance": "APPROVE",
+  "arguments": [
+    {
+      "point": "The plan case is positive: {{npv}} clears the hurdle if the labor-savings assumption holds after ramp-up.",
+      "cited_metrics": ["npv"],
+      "cited_assumptions": ["Labor savings phase in after a six-month ramp."]
+    }
+  ],
+  "top_risk": "The ramp could take longer than the sponsor expects.",
+  "questions_for_sponsor": []
+}
