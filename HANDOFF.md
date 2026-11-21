@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M4.3 rules decision engine is done locally, together with the M4.2 wording. https://github.com/driaialchemy/capex was published on 2026-11-18 and does not include either yet. Wait for `approved push`.
+M4.3 rules decision engine is published, together with the M4.2 wording, at https://github.com/driaialchemy/capex on `main` (`5b418b8`).
 
 ## Done
 
@@ -29,7 +29,7 @@ M4.3 rules decision engine is done locally, together with the M4.2 wording. http
 
 ## Next
 
-Push the readable-text wording and the rules decision engine when the reply is `approved push`. No further product work is queued.
+No further product work is queued. The rules engine and the readable-text wording are on `main`.
 
 ## Manual check
 
