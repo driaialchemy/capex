@@ -21,6 +21,7 @@ class CapexPolicy(BaseModel):
 
     hurdle_rate: float
     max_payback_years: int
+    stress_test_metric: str
     approval_tiers: ApprovalTiers
     allowed_recommendations: list[str]
 
@@ -71,6 +72,7 @@ class DecisionMemo(BaseModel):
     cited_metrics: list[str]
     conditions: list[str] = Field(default_factory=list)
     disagreements_addressed: list[str] = Field(default_factory=list)
+    panel_concerns: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def conditions_required_for_conditional_approval(self):

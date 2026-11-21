@@ -74,6 +74,14 @@ Only the Judge is retried, and only once. A second attempt is recorded with `att
 
 Custom CSS is allowed only in `src/capex/ui_theme.py`. The page background is `assets/bg_page.webp`, the sidebar is `assets/bg_sidebar.webp` under a dark overlay, and the hero banner is `assets/hero_pipeline.webp`, shown as cropped. Originals stay in `assets/source/`, which is gitignored.
 
+## 2026-11-18 — Display labels stay out of the logic
+
+Words a person reads live in `src/capex/labels.py`. Check names, status codes, and recommendation codes stay in the logic, the JSON logs, and the tests. `memo.md` uses the English recommendation. When a sponsor finding exists, the file still ends with `## Proposal findings` and the raw check name, because an existing test reads that heading. The page shows that block once, in plain language, and keeps the raw lines inside “Technical details (for builders).”
+
+## 2026-11-20 — Code decides the recommendation from the numbers; the LLM explains it
+
+`decide()` in `src/capex/decision.py` applies the first matching rule. R1 rejects a negative net present value. R2 defers when payback is missing or longer than the policy limit. R3 approves with conditions when the stress figure named in policy, `npv_flows_minus_10`, is below zero. R4 approves otherwise. The Judge copies that recommendation, explains it, proposes conditions, and lists concerns. It cannot change the outcome. `recommendation_matches_rules` and `conditions_cite_stress` block a mismatch. `panel_disagreement` is a red flag when two or more panelists share a stance the rules did not choose, and it does not block. The on-disk memo heading stays `## Proposal findings`. The page heading is "Red flags for the approver".
+
 ## 2026-11-18 — Sample evidence lives outside runs/
 
 `runs/` stays gitignored. `python -m capex.export_sample CPX-003` copies the latest CPX-003 run, and only that run's flight-recorder lines, into `docs/sample_run/CPX-003/`. That folder is the evidence a visitor can read. Committing it is M5.

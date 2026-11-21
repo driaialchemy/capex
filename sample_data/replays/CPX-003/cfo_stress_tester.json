@@ -3,7 +3,7 @@
   "stance": "REJECT",
   "arguments": [
     {
-      "point": "{{npv}} is below zero, {{payback_years}} is not recovered within the life of the fleet, and {{npv_flows_minus_10}} is worse. The sponsor's payback claim is not supported.",
+      "point": "A net present value of {{npv}} is below zero. Payback is {{payback_years}}, so the investment is not recovered within the life of the fleet. If yearly cash flows come in a tenth light, the net present value of {{npv_flows_minus_10}} is worse. The sponsor's payback claim is not supported.",
       "cited_metrics": ["npv", "payback_years", "npv_flows_minus_10"],
       "cited_assumptions": ["Routes and mileage stay at this year's level."]
     }

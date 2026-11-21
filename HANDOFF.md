@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M5 done — published. https://github.com/driaialchemy/capex on 2026-11-18.
+M4.3 rules decision engine is done locally, together with the M4.2 wording. https://github.com/driaialchemy/capex was published on 2026-11-18 and does not include either yet. Wait for `approved push`.
 
 ## Done
 
@@ -15,7 +15,9 @@ M5 done — published. https://github.com/driaialchemy/capex on 2026-11-18.
 - `DecisionMemo` cites figures only as `{{metric_key}}` tokens. `render_memo` shows whole dollars, rates like `17.2%`, and years to one decimal, or `not recovered`. Cents stay in `Metrics`.
 - `{{proposal_id}}` is rejected by `tokens_valid`.
 - The code-only verifier catches a disallowed recommendation, raw figures, unknown tokens, and CPX-003's "pays for itself in 2 years" claim. "40% fuel savings" is reported UNVERIFIED and does not fail the memo by itself.
-- Tests: 62 passed. The original 50 still pass.
+- Tests: 73 passed. The original 50 still pass.
+- Display labels live in `src/capex/labels.py`. Internal names stay in the logic and the logs. Replays name each figure, as in “a net present value of {{npv}}.”
+- Code decides the recommendation from the numbers. `decide()` applies R1 Reject, R2 Defer, R3 Approve with conditions, then R4 Approve. The Judge explains that result. Smoke decisions: `runs/CPX-001-20261121T003324Z` is R4, `runs/CPX-002-20261121T003328Z` is R3, `runs/CPX-003-20261121T003332Z` is R1. CPX-003 still retries once, and the payback claim stays a finding.
 - Debate pipeline in `src/capex/pipeline.py`. Offline mode reads `sample_data/replays/`. Sponsor, CFO, and operations run in that order. Each prompt omits the other panelists' output. The Judge may see the three positions.
 - Verifier checks carry `blocking`. `recommendation_allowed`, `no_raw_figures`, and `tokens_valid` block. `sponsor_payback_claim` and `sponsor_percent_claims` do not. A retry, and `PENDING_APPROVAL`, depend only on the blocking checks. Non-blocking failures are Proposal findings in `memo.md`, `status.json`, and the flight recorder.
 - CPX-003's first Judge draft fails the blocking checks, retries once, and lands on REJECT at `PENDING_APPROVAL`. The payback claim stays under Proposal findings. Smoke run: `runs/CPX-003-20261118T235435Z`.
@@ -27,7 +29,7 @@ M5 done — published. https://github.com/driaialchemy/capex on 2026-11-18.
 
 ## Next
 
-The public repo is live. No further product work is queued.
+Push the readable-text wording and the rules decision engine when the reply is `approved push`. No further product work is queued.
 
 ## Manual check
 

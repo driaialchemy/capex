@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 from capex.approval import ApprovalError, latest_run as _latest_run
+from capex.decision import RulesDecision
 from capex.finance import Metrics
 from capex.llm import repo_root
 from capex.render import format_money
@@ -61,6 +62,12 @@ def load_run(run_dir: str | Path) -> dict:
         VerificationReport.model_validate_json(path.read_text(encoding="utf-8"))
         for path in sorted(folder.glob("verification.attempt*.json"))
     ]
+    decision_path = folder / "decision.json"
+    decision = (
+        RulesDecision.model_validate_json(decision_path.read_text(encoding="utf-8"))
+        if decision_path.is_file()
+        else None
+    )
     memo_path = folder / "memo.md"
     memo_md = memo_path.read_text(encoding="utf-8") if memo_path.is_file() else ""
     status_path = folder / "status.json"
@@ -74,6 +81,7 @@ def load_run(run_dir: str | Path) -> dict:
         "positions": positions,
         "memo_attempts": memo_attempts,
         "verification_attempts": verification_attempts,
+        "decision": decision,
         "memo_md": memo_md,
         "status": status,
         "approvals": approvals,

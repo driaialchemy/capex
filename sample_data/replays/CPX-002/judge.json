@@ -1,19 +1,19 @@
 {
   "proposal_id": "CPX-002",
   "recommendation": "APPROVE_WITH_CONDITIONS",
-  "headline": "Approve only with a staged rollout",
+  "headline": "Approve with conditions: roll out in stages",
   "sections": [
     {
       "title": "Recommendation",
-      "body": "The plan {{npv}} is positive, but {{npv_flows_minus_10}} turns negative if the savings come in light. Approve with conditions rather than defer: stage the rollout, and hold a labor-savings checkpoint before expanding."
+      "body": "At plan, this project is worth {{npv}} in today's dollars (net present value) and pays back in {{payback_years}} years. That cushion is thin. If yearly cash flows come in a tenth below plan, the value falls to {{npv_flows_minus_10}}. We recommend approving, but only with the safeguards below."
     }
   ],
-  "cited_metrics": ["npv", "npv_flows_minus_10"],
+  "cited_metrics": ["npv", "payback_years", "npv_flows_minus_10"],
   "conditions": [
-    "Stage the rollout and do not expand until the early cell is stable.",
-    "Hold a labor-savings checkpoint before the second phase, using {{npv_flows_minus_10}} as the stress test."
+    "Roll out one zone first, and expand only after it has run reliably for a full quarter.",
+    "Before phase two, compare actual labor savings with the plan. If they're running a tenth or more short, pause. At that level the project stops paying off ({{npv_flows_minus_10}})."
   ],
   "disagreements_addressed": [
-    "The CFO would defer because the lighter cash-flow case is negative. Operations asked for a checkpoint. The base case still supports going ahead if those conditions are met."
+    "The CFO Stress-Tester leaned toward deferring, because the project loses money if savings fall short. Operations Risk was comfortable going ahead with a checkpoint. We side with going ahead, because the conditions above limit how much is spent before a shortfall would show up."
   ]
 }

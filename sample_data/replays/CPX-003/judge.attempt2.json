@@ -5,7 +5,7 @@
   "sections": [
     {
       "title": "Case",
-      "body": "The investment is not recovered ({{payback_years}}) and {{npv}} is below zero. The vendor fuel-savings claim is unverified."
+      "body": "Payback is {{payback_years}}, so the cash flows never recover the investment. A net present value of {{npv}} is below zero. The vendor fuel-savings claim is unverified."
     }
   ],
   "cited_metrics": ["payback_years", "npv"],

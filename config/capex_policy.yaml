@@ -1,5 +1,6 @@
 hurdle_rate: 0.10
 max_payback_years: 5
+stress_test_metric: npv_flows_minus_10
 approval_tiers:
   department_head_if_under: 250000
   cfo_if_up_to: 1000000

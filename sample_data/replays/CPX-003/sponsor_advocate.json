@@ -3,7 +3,7 @@
   "stance": "DEFER",
   "arguments": [
     {
-      "point": "Replacing the fleet is a real operating need, but {{npv}} does not clear the hurdle. The honest stance is to defer until the vendor claim is evidenced.",
+      "point": "Replacing the fleet is a real operating need, but a net present value of {{npv}} does not clear the hurdle. The honest stance is to defer until the vendor claim is evidenced.",
       "cited_metrics": ["npv"],
       "cited_assumptions": ["Routes and mileage stay at this year's level."]
     }

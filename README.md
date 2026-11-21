@@ -42,11 +42,22 @@ Windows blocks unsigned scripts by default, so the launch command includes `-Exe
 The page has one sidebar and six tabs. Each tab after the proposal is labeled so the boundary is on screen.
 
 1. **Proposal.** The order. Title, sponsor, investment, approval tier, sponsor notes, and assumptions. CPX-003's notes include the "2 years" claim.
-2. **Calculator. Code check.** NPV, IRR, and payback from `render.py`, plus a bar chart of the stored scenarios: plan, flows −20%, flows −10%, flows +10%, and rate +2pp. If a scenario NPV is below zero, the page says "This proposal loses money if…" and names it. CPX-002 loses money at flows −10%.
+2. **Calculator. Code check.** NPV, IRR, and payback from `render.py`, plus a Rules decision card: the outcome, the rule, and the reasons in plain English. Below that, a bar chart of the stored scenarios: plan, flows −20%, flows −10%, flows +10%, and rate +2pp. If a scenario NPV is below zero, the page says "This proposal loses money if…" and names it. CPX-002 loses money at flows −10%.
 3. **Panel. AI judgment.** Sponsor, CFO, and operations side by side. Tokens are filled from the metrics file.
-4. **Inspector. Code check.** One block per memo attempt. Blocking checks and Proposal findings are separate. CPX-003 attempt 1 is blocked; attempt 2 passes, and the payback claim stays a finding. The final `memo.md` is below.
+4. **Inspector. Code check.** One block per memo attempt. Blocking checks and red flags are separate. The on-screen heading is "Red flags for the approver". CPX-003 attempt 1 is blocked; attempt 2 passes, and the payback claim stays a finding. The final `memo.md` is below.
 5. **Logbook. Record.** This run's flight-recorder rows, filtered by event type. A retry row shows `attempt_number`, `retry_of`, and `retry_reason`, and is repeated in a warning.
-6. **Sign-off. Human.** Name, role, decision, and a note. Submit calls `approval.approve`. A refused role shows the reason. It does not crash, and it does not write an approval.
+6. **Sign-off. Human.** The line "Decided by rule R#: …" names the rule that set the recommendation. Name, role, decision, and a note follow. Submit calls `approval.approve`. A refused role shows the reason. It does not crash, and it does not write an approval.
+
+Code decides the recommendation from the numbers. The Judge explains that result. First matching rule wins.
+
+| Rule | When it fires | Recommendation |
+| --- | --- | --- |
+| R1 | Net present value is below zero | Reject |
+| R2 | Payback is missing, or longer than the policy limit | Defer |
+| R3 | Net present value is below zero if cash flows come in a tenth light | Approve with conditions |
+| R4 | Otherwise | Approve |
+
+CPX-001 is R4, CPX-002 is R3, and CPX-003 is R1. The stress figure is `npv_flows_minus_10`, named in `config/capex_policy.yaml`.
 
 The sidebar shows offline or live mode and the kill switch. **Run review** calls the pipeline. **Engage kill switch** creates `KILL_SWITCH` and the next run refuses to start. **Release kill switch** removes the file.
 

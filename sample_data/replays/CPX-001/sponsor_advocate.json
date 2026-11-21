@@ -3,7 +3,7 @@
   "stance": "APPROVE",
   "arguments": [
     {
-      "point": "The base case clears the hurdle: {{npv}} is positive and {{payback_years}} is inside the policy limit.",
+      "point": "The base case clears the hurdle: a net present value of {{npv}} is positive, and payback of {{payback_years}} years is inside the policy limit.",
       "cited_metrics": ["npv", "payback_years"],
       "cited_assumptions": ["Utilization stays near current overtime levels."]
     },

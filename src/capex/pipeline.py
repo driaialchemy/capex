@@ -8,9 +8,11 @@ from string import Template
 from pydantic import ValidationError
 
 from capex.compute import write_metrics
+from capex.decision import decide
 from capex.finance import Metrics, citeable_metrics
+from capex.labels import RECOMMENDATIONS
 from capex.flight_recorder import new_event, prompt_sha256, record
-from capex.gates import PANEL_ROLES, gate_metrics, gate_positions
+from capex.gates import PANEL_ROLES, gate_decision, gate_metrics, gate_positions
 from capex.kill_switch import KillSwitchEngaged, is_engaged
 from capex.llm import call_model, parse_json_response, repo_root
 from capex.policy import load_policy
@@ -48,6 +50,7 @@ def render_prompt(
     metrics: Metrics,
     positions_json: str = "",
     verifier_failures: str = "none",
+    rules_decision: str = "",
 ) -> str:
     """Fill $placeholders. {{metric_key}} tokens in the prompt stay literal."""
     path = repo_root() / "prompts" / f"{role}.md"
@@ -61,6 +64,7 @@ def render_prompt(
         "memo_schema": json.dumps(DecisionMemo.model_json_schema(), indent=2),
         "positions_json": positions_json,
         "verifier_failures": verifier_failures,
+        "rules_decision": rules_decision,
     }
     return template.safe_substitute(mapping)
 
@@ -92,10 +96,11 @@ def _verifier_detail(report: VerificationReport) -> str:
 
 def _write_memo_md(path: Path, memo: DecisionMemo, metrics: Metrics, findings: list) -> None:
     rendered = render_memo(memo, metrics)
+    shown = RECOMMENDATIONS.get(rendered.recommendation, rendered.recommendation)
     lines = [
         f"# {rendered.headline}",
         "",
-        f"Recommendation: {rendered.recommendation}",
+        f"**{shown}**",
         "",
     ]
     if rendered.conditions:
@@ -108,10 +113,12 @@ def _write_memo_md(path: Path, memo: DecisionMemo, metrics: Metrics, findings: l
         lines.extend(["## Disagreements addressed", ""])
         lines.extend(f"- {item}" for item in rendered.disagreements_addressed)
         lines.append("")
-    lines.extend(["## Proposal findings", ""])
-    if not findings:
-        lines.append("None.")
-    else:
+    if rendered.panel_concerns:
+        lines.extend(["## Concerns from the panel", ""])
+        lines.extend(f"- {item}" for item in rendered.panel_concerns)
+        lines.append("")
+    if findings:
+        lines.extend(["## Proposal findings", ""])
         lines.extend(f"- {check.name}: {check.detail}" for check in findings)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -138,6 +145,8 @@ def _judge(
     attempt: int,
     verifier_failures: str,
     lines: list[str],
+    positions: list[Position],
+    rules_decision: str,
 ) -> tuple[DecisionMemo | None, VerificationReport | None, str]:
     prompt = render_prompt(
         "judge",
@@ -145,6 +154,7 @@ def _judge(
         metrics,
         positions_json=positions_json,
         verifier_failures=verifier_failures,
+        rules_decision=rules_decision,
     )
     text = call_model("judge", prompt, proposal.proposal_id, attempt)
     event = new_event(
@@ -168,7 +178,7 @@ def _judge(
     memo_path = run_dir / f"memo.attempt{attempt}.json"
     memo_path.write_text(memo.model_dump_json(indent=2) + "\n", encoding="utf-8")
     record(event, log_path)
-    report = verify(memo, metrics, proposal)
+    report = verify(memo, metrics, proposal, positions=positions)
     ver_path = run_dir / f"verification.attempt{attempt}.json"
     ver_path.write_text(report.model_dump_json(indent=2) + "\n", encoding="utf-8")
     record(
@@ -242,7 +252,44 @@ def run(proposal_id: str, runs_root: str | Path | None = None) -> RunResult:
         return RunResult(proposal_id, run_dir, "BLOCKED", None, lines)
 
     metrics = Metrics.model_validate_json((run_dir / "metrics.json").read_text(encoding="utf-8"))
+    decision = decide(metrics, policy)
+    (run_dir / "decision.json").write_text(decision.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    decision_gate = gate_decision(run_dir, proposal, policy)
+    record(
+        new_event(
+            run_id,
+            "gate",
+            "rules",
+            "ok" if decision_gate.passed else "fail",
+            "decision gate passed" if decision_gate.passed else "; ".join(decision_gate.reasons),
+            output_path="decision.json",
+        ),
+        log_path,
+    )
+    if not decision_gate.passed:
+        lines.append("decision gate fail")
+        _write_status(run_dir, "BLOCKED", None, 0, [])
+        lines.append("status BLOCKED")
+        lines.append(str(run_dir))
+        return RunResult(proposal_id, run_dir, "BLOCKED", None, lines)
+    record(
+        new_event(
+            run_id,
+            "stage",
+            "rules",
+            "ok",
+            f"Rules decision {decision.rule}",
+            output_path="decision.json",
+        ),
+        log_path,
+    )
+    lines.append(f"decision {decision.rule}")
+    rules_text = (
+        f"Rule {decision.rule} sets the recommendation to {decision.recommendation}. "
+        "Copy that recommendation exactly."
+    )
     positions_dir = run_dir / "positions"
+    written_positions: list[Position] = []
     positions_dir.mkdir()
     for role in PANEL_ROLES:
         prompt = render_prompt(role, proposal, metrics)
@@ -267,6 +314,7 @@ def run(proposal_id: str, runs_root: str | Path | None = None) -> RunResult:
             lines.append("status BLOCKED")
             lines.append(str(run_dir))
             return RunResult(proposal_id, run_dir, "BLOCKED", None, lines)
+        written_positions.append(position)
         out = positions_dir / f"{role}.json"
         out.write_text(position.model_dump_json(indent=2) + "\n", encoding="utf-8")
         record(
@@ -320,6 +368,8 @@ def run(proposal_id: str, runs_root: str | Path | None = None) -> RunResult:
         attempt=1,
         verifier_failures="none",
         lines=lines,
+        positions=written_positions,
+        rules_decision=rules_text,
     )
     attempts = 1
     needs_retry = memo is None or report is None or bool(blocking_failures(report))
@@ -353,6 +403,8 @@ def run(proposal_id: str, runs_root: str | Path | None = None) -> RunResult:
             attempt=2,
             verifier_failures=feedback,
             lines=lines,
+            positions=written_positions,
+            rules_decision=rules_text,
         )
         attempts = 2
 

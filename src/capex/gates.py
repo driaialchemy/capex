@@ -4,6 +4,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
+from capex.decision import RulesDecision, decide
 from capex.finance import Metrics, compute_metrics
 from capex.schemas import CapexPolicy, Position, Proposal
 from capex.verifier import check_no_raw_figures_text, check_tokens_text
@@ -41,6 +42,32 @@ def gate_metrics(run_dir: str | Path, proposal: Proposal, policy: CapexPolicy) -
     for key, fresh_value in fresh.model_dump().items():
         if getattr(saved, key) != fresh_value:
             reasons.append(f"{key} does not match a fresh calculation")
+    return GateResult(passed=not reasons, reasons=reasons)
+
+
+def gate_decision(run_dir: str | Path, proposal: Proposal, policy: CapexPolicy) -> GateResult:
+    """Open decision.json and compare it with a fresh rules decision."""
+    path = Path(run_dir) / "decision.json"
+    if not path.is_file():
+        return GateResult(passed=False, reasons=["decision.json is missing"])
+
+    try:
+        saved = RulesDecision.model_validate_json(path.read_text(encoding="utf-8"))
+    except ValidationError as error:
+        return GateResult(passed=False, reasons=[error.errors()[0]["msg"]])
+
+    fresh = decide(compute_metrics(proposal, policy), policy)
+    reasons: list[str] = []
+    if saved.proposal_id != proposal.proposal_id:
+        reasons.append(
+            f"proposal_id does not match ({saved.proposal_id} != {proposal.proposal_id})"
+        )
+    if saved.recommendation != fresh.recommendation:
+        reasons.append("recommendation does not match a fresh calculation")
+    if saved.rule != fresh.rule:
+        reasons.append("rule does not match a fresh calculation")
+    if saved.reasons != fresh.reasons:
+        reasons.append("reasons do not match a fresh calculation")
     return GateResult(passed=not reasons, reasons=reasons)
 
 

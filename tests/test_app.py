@@ -58,6 +58,30 @@ def test_department_head_is_refused_for_cpx_001(tmp_path):
     assert not (status_files[0].parent / "approvals.json").exists()
 
 
+def test_inspector_hides_machine_names_for_cpx_002():
+    at = AppTest.from_file(str(APP), default_timeout=90).run()
+    at.selectbox(key="proposal").select("CPX-002")
+    at.button(key="run_review").click().run(timeout=90)
+    assert not at.exception
+    hidden: list[str] = []
+    for expander in at.expander:
+        if expander.label != "Technical details (for builders)":
+            continue
+        for collection in (expander.markdown, expander.code, expander.text):
+            for item in collection:
+                hidden.append(str(item.value))
+    visible = _page(at)
+    for chunk in hidden:
+        visible = visible.replace(chunk, "")
+    for raw in (
+        "recommendation_allowed",
+        "no_raw_figures",
+        "tokens_valid",
+        "APPROVE_WITH_CONDITIONS",
+    ):
+        assert raw not in visible
+
+
 def test_kill_switch_refuses_run_review(monkeypatch, tmp_path):
     monkeypatch.setenv("CAPEX_KILL_SWITCH", "1")
     at = AppTest.from_file(str(APP), default_timeout=90).run()
@@ -66,3 +90,14 @@ def test_kill_switch_refuses_run_review(monkeypatch, tmp_path):
     assert any("Kill switch" in item.value for item in at.error)
     folders = [path for path in Path(tmp_path).iterdir() if path.is_dir()]
     assert folders == []
+
+
+def test_calculator_shows_the_rules_decision_card():
+    at = AppTest.from_file(str(APP), default_timeout=90).run()
+    at.selectbox(key="proposal").select("CPX-001")
+    at.button(key="run_review").click().run(timeout=90)
+    assert not at.exception
+    page = _page(at)
+    assert "Rules decision" in page
+    assert "Decided by rule R4" in page
+    assert "APPROVE_WITH_CONDITIONS" not in page

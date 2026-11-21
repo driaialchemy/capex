@@ -3,7 +3,7 @@
   "stance": "DEFER",
   "arguments": [
     {
-      "point": "The plan {{npv}} is only barely positive. {{npv_flows_minus_10}} turns the case negative, and {{npv_flows_minus_20}} is worse. That is too much assumption risk for an outright approval.",
+      "point": "A net present value of {{npv}} is only barely positive. If yearly cash flows come in a tenth light, the net present value of {{npv_flows_minus_10}} turns the case negative, and a fifth light leaves a net present value of {{npv_flows_minus_20}}. That is too much assumption risk for an outright approval.",
       "cited_metrics": ["npv", "npv_flows_minus_10", "npv_flows_minus_20"],
       "cited_assumptions": ["Order volume stays at the current run rate."]
     }

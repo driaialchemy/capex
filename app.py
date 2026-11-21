@@ -6,8 +6,23 @@ from pathlib import Path
 import streamlit as st
 
 from capex.approval import ApprovalError, approve
+from capex.decision import decide
 from capex.gates import PANEL_ROLES
 from capex.kill_switch import KillSwitchEngaged, engage, is_engaged, release
+from capex.labels import (
+    CHECKS_FAILED,
+    CHECKS_PASSED,
+    EVENT_TYPES,
+    LOG_COLUMNS as LOG_HEADERS,
+    METRICS as METRIC_LABELS,
+    REASONS,
+    RECOMMENDATIONS,
+    ROLES,
+    RULES,
+    SIGN_OFF_DECISIONS,
+    SIGN_OFF_ROLES,
+    STATUSES,
+)
 from capex.llm import current_mode, repo_root
 from capex.pipeline import run
 from capex.policy import approval_tier, load_policy
@@ -64,6 +79,14 @@ def _label(text: str) -> None:
 
 def _needs_run() -> None:
     st.info("Run a review to see this.")
+
+
+def _person_memo(memo_md: str) -> str:
+    """The decision memo without the machine findings block at the bottom."""
+    marker = "\n## Proposal findings"
+    if marker in memo_md:
+        return memo_md.split(marker, 1)[0].rstrip() + "\n"
+    return memo_md
 
 
 proposals = list_proposals()
@@ -125,10 +148,23 @@ with calculator_tab:
         _needs_run()
     else:
         metrics = loaded["metrics"]
-        st.dataframe(
-            [{"Metric": key, "Value": format_metric(key, getattr(metrics, key))} for key in METRIC_KEYS],
-            hide_index=True,
-        )
+        rows_for_table = []
+        for key in METRIC_KEYS:
+            raw = getattr(metrics, key)
+            if key == "allowed_recommendations":
+                value = ", ".join(RECOMMENDATIONS.get(item, item) for item in raw)
+            else:
+                value = format_metric(key, raw)
+            rows_for_table.append({"Metric": METRIC_LABELS[key], "Value": value})
+        st.dataframe(rows_for_table, hide_index=True)
+        decision = loaded["decision"]
+        if decision is None:
+            decision = decide(metrics, policy)
+        st.markdown("**Rules decision**")
+        st.markdown(f"**{RECOMMENDATIONS[decision.recommendation]}**")
+        st.markdown(f"{decision.rule}. {RULES[decision.rule]}")
+        for code in decision.reasons:
+            st.markdown(REASONS.get(code, code))
         rows = sensitivity_rows(metrics)
         st.bar_chart(rows, x="scenario", y="npv", sort=False)
         losses = [row["scenario"] for row in rows if row["negative"]]
@@ -145,11 +181,11 @@ with panel_tab:
         for column, role in zip(columns, PANEL_ROLES):
             position = loaded["positions"].get(role)
             with column:
-                st.subheader(role)
+                st.subheader(ROLES[role])
                 if position is None:
                     st.write("No position file.")
                     continue
-                st.write(f"Stance: {position.stance}")
+                st.write(f"Stance: {RECOMMENDATIONS.get(position.stance, position.stance)}")
                 for argument in position.arguments:
                     st.write(render_text(argument.point, loaded["metrics"]))
                 st.markdown("**Top risk**")
@@ -166,24 +202,34 @@ with inspector_tab:
     else:
         for number, report in enumerate(loaded["verification_attempts"], start=1):
             st.subheader(f"Attempt {number}")
-            if report.passed:
-                st.success("Blocking checks passed")
-            else:
-                st.error("Blocking checks failed")
-            st.markdown("**Blocking checks**")
+            st.markdown("**Inspector checks**")
+            st.caption("must pass before anyone can sign off")
             for check in report.checks:
                 if not check.blocking:
                     continue
-                mark = "pass" if check.passed else "fail"
-                st.write(f"{check.name}: {mark} — {check.detail}")
-            st.markdown("**Proposal findings**")
-            findings = [check for check in report.checks if not check.blocking and not check.passed]
-            if not findings:
-                st.write("None.")
-            for check in findings:
-                st.write(f"{check.name}: fail — {check.detail}")
-        st.markdown("**Final memo**")
-        st.markdown(loaded["memo_md"])
+                if check.passed:
+                    st.write(f"✅ {CHECKS_PASSED[check.name]}")
+                else:
+                    st.write(f"❌ {CHECKS_FAILED[check.name]}")
+                    st.write(check.detail)
+            with st.expander("Technical details (for builders)"):
+                for check in report.checks:
+                    state = "pass" if check.passed else "fail"
+                    st.code(
+                        f"{check.name} | {state} | blocking={check.blocking} | {check.detail}"
+                    )
+                st.code(f"status={loaded['status'].get('status')}")
+        latest = loaded["verification_attempts"][-1]
+        findings = [check for check in latest.checks if not check.blocking and not check.passed]
+        st.markdown("**Red flags for the approver**")
+        st.caption("shown to the approver; these don't block the memo")
+        if not findings:
+            st.write("None found.")
+        for check in findings:
+            st.write(f"❌ {CHECKS_FAILED[check.name]}")
+            st.write(check.detail)
+        st.markdown("**Decision memo**")
+        st.markdown(_person_memo(loaded["memo_md"]))
 
 with logbook_tab:
     st.caption("The logbook: every step is a line that was appended, not edited.")
@@ -193,7 +239,12 @@ with logbook_tab:
     else:
         events = run_events(run_dir.name, _runs_root())
         names = ["All", *sorted({event["event_type"] for event in events})]
-        chosen = st.selectbox("Event type", names, key="event_type")
+        chosen = st.selectbox(
+            "Event type",
+            names,
+            format_func=lambda name: "All" if name == "All" else EVENT_TYPES.get(name, name),
+            key="event_type",
+        )
         shown = events if chosen == "All" else [event for event in events if event["event_type"] == chosen]
         for event in shown:
             if event["event_type"] == "retry":
@@ -204,7 +255,10 @@ with logbook_tab:
                     f"retry_reason={event.get('retry_reason')}"
                 )
         st.dataframe(
-            [{column: event.get(column) for column in LOG_COLUMNS} for event in shown],
+            [
+                {LOG_HEADERS[column]: event.get(column) for column in LOG_COLUMNS}
+                for event in shown
+            ],
             hide_index=True,
         )
 
@@ -215,8 +269,19 @@ with signoff_tab:
         _needs_run()
     else:
         flash = st.session_state.pop("flash_success", None)
-        st.markdown(f"**Status:** {loaded['status'].get('status')}")
-        st.markdown(f"**Recommendation:** {loaded['status'].get('recommendation')}")
+        status_code = loaded["status"].get("status")
+        recommendation_code = loaded["status"].get("recommendation")
+        st.markdown(f"**Status:** {STATUSES.get(status_code, status_code)}")
+        st.markdown(
+            f"**Recommendation:** {RECOMMENDATIONS.get(recommendation_code, recommendation_code)}"
+        )
+        decision = loaded["decision"]
+        if decision is None and loaded["metrics"] is not None:
+            decision = decide(loaded["metrics"], policy)
+        if decision is not None:
+            st.markdown(
+                f"**Decided by rule {decision.rule}:** {RECOMMENDATIONS[decision.recommendation]}"
+            )
         if loaded["approvals"]:
             st.dataframe(loaded["approvals"], hide_index=True)
         else:
@@ -228,9 +293,15 @@ with signoff_tab:
             role = st.selectbox(
                 "Role",
                 ["department_head", "cfo", "ceo"],
+                format_func=lambda item: SIGN_OFF_ROLES.get(item, item),
                 key="approver_role",
             )
-            decision = st.selectbox("Decision", ["APPROVED", "RETURNED"], key="decision")
+            decision = st.selectbox(
+                "Decision",
+                ["APPROVED", "RETURNED"],
+                format_func=lambda item: SIGN_OFF_DECISIONS.get(item, item),
+                key="decision",
+            )
             note = st.text_area("Note", key="note")
             submitted = st.form_submit_button("Submit", key="sign_off")
         if submitted:

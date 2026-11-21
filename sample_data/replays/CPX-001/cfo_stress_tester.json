@@ -3,7 +3,7 @@
   "stance": "APPROVE",
   "arguments": [
     {
-      "point": "Even the lighter case stays positive: {{npv_flows_minus_10}} and {{npv_flows_minus_20}} remain above zero, and {{payback_years}} is within {{max_payback_years}}.",
+      "point": "Even the lighter case stays positive. A net present value of {{npv_flows_minus_10}} if cash flows are a tenth light, and a net present value of {{npv_flows_minus_20}} if they are a fifth light, remain above zero. Payback of {{payback_years}} years is within the policy limit of {{max_payback_years}} years.",
       "cited_metrics": ["npv_flows_minus_10", "npv_flows_minus_20", "payback_years", "max_payback_years"],
       "cited_assumptions": ["Maintenance costs are included in the annual cash flows."]
     }

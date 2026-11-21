@@ -77,5 +77,6 @@ def render_memo(memo: DecisionMemo, metrics: Metrics) -> DecisionMemo:
             "disagreements_addressed": [
                 _fill(item, metrics) for item in memo.disagreements_addressed
             ],
+            "panel_concerns": [_fill(item, metrics) for item in memo.panel_concerns],
         }
     )
